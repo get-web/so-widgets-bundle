@@ -91,16 +91,23 @@ jQuery( function ( $ ) {
 			// Set up Autoplay. We use a custom autoplay rather than the Slick
 			// autoplay to account for the (sometimes) non-standard nature of our
 			// navigation that Slick has trouble accounting for.
+			var interrupted = false;
+			var autoplayInterval;
+			var autoplay = function () {
+				return setInterval(function () {
+					if (!interrupted) {
+						autoplayNav.trigger('click');
+					}
+				}, carouselSettings.autoplaySpeed);
+			}
+
 			if ( carouselSettings.autoplay ) {
-				var interrupted = false;
+				
 				var autoplayNav = $$.parent().parent().find( '.sow-carousel-' + ( $$.data( 'dir' ) == 'ltr' ? 'next' : 'prev' ) );
 				// Check if this is a Block Editor preview, and if it is, don't autoplay.
 				if ( ! $( 'body' ).hasClass( 'block-editor-page' ) ) {
-					setInterval( function() {
-						if ( ! interrupted ) {
-							autoplayNav.trigger( 'click' );
-						}
-					}, carouselSettings.autoplaySpeed );
+					
+					autoplayInterval = autoplay();
 
 					if ( carouselSettings.pauseOnHover ) {
 						$items.on('mouseenter.slick', function() {
@@ -193,9 +200,14 @@ jQuery( function ( $ ) {
 					$$.find( 'li.slick-active' ).removeClass( 'slick-active' );
 					$$.find( '.slick-dots li' ).eq( Math.ceil( $$.find( '.sow-carousel-items' ).slick( 'slickCurrentSlide' ) / slidesToScroll ) ).addClass( 'slick-active' );
 				}
+
+				// Reset autoplay
+				clearInterval(autoplayInterval);
+				autoplayInterval = autoplay();
 			} );
 
 			if ( carouselSettings.dots && ( $$.data( 'variable_width' ) || $$.data( 'carousel_settings' ).theme ) ) {
+				
 				// Unbind base Slick Dot Navigation as we use a custom event to prevent blank spaces.
 				$$.find( '.slick-dots li' ).off( 'click.slick' );
 				var carouselDotNavigation = function() {
@@ -243,6 +255,10 @@ jQuery( function ( $ ) {
 				$( sowb ).on( 'carousel_posts_added', function() {
 					$$.find( '.slick-dots li' ).on( 'click touchend', carouselDotNavigation );
 				} );
+
+				// Reset autoplay
+				clearInterval(autoplayInterval);
+				autoplayInterval = autoplay();
 			}
 		} );
 
