@@ -249,6 +249,10 @@ jQuery( function ( $ ) {
 							}
 						}
 					}
+
+					// Reset autoplay
+					clearInterval(autoplayInterval);
+					autoplayInterval = autoplay();
 				};
 				$$.find( '.slick-dots li' ).on( 'click touchend', carouselDotNavigation );
 				// Setup Slick Dot Navigation again when new posts are added.
@@ -256,9 +260,6 @@ jQuery( function ( $ ) {
 					$$.find( '.slick-dots li' ).on( 'click touchend', carouselDotNavigation );
 				} );
 
-				// Reset autoplay
-				clearInterval(autoplayInterval);
-				autoplayInterval = autoplay();
 			}
 		} );
 
